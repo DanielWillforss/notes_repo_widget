@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:notes_repo_core/note_package.dart';
 
 class NotesApi {
-  static const String baseUrl = 'http://127.0.0.1:5000/notes';
+  static late String baseUrl;
 
   /// GET /notes
   static Future<List<Note>> getNotes() async {
