@@ -37,7 +37,7 @@ class NotesApi {
   /// PUT /notes/{id}
   static Future<Note> updateNote(int id, String title, String body) async {
     final response = await http.put(
-      Uri.parse('$baseUrl/$id'),
+      Uri.parse('$baseUrl$id/'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'title': title, 'body': body}),
     );
@@ -52,7 +52,7 @@ class NotesApi {
 
   /// DELETE /notes/{id}
   static Future<void> deleteNote(int id) async {
-    final response = await http.delete(Uri.parse('$baseUrl/$id'));
+    final response = await http.delete(Uri.parse('$baseUrl$id/'));
 
     if (response.statusCode != 200) {
       throw Exception('Failed to delete note');

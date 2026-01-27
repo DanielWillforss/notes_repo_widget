@@ -3,7 +3,7 @@ import 'package:notes_repo_widget/note_widget_package.dart';
 import 'package:notes_repo_widget/src/notes_page.dart';
 
 void main() {
-  NotesApi.baseUrl = 'http://127.0.0.1:5000/notes';
+  NotesApi.baseUrl = 'http://127.0.0.1:5000/notes/';
   //NotesApi.baseUrl = 'https://danielwillforss.site/notes';
   runApp(const MyApp());
 }
