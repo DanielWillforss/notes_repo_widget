@@ -28,6 +28,7 @@ class _NotesPageState extends State<NotesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
+        heroTag: 'notesPage',
         onPressed: () => _showDialogWindow(null),
         child: const Icon(Icons.add),
       ),
@@ -117,12 +118,8 @@ class _NotesPageState extends State<NotesPage> {
           ElevatedButton(
             onPressed: () async {
               isNewNote
-                  ? await NotesApi.createNote(titleController.text, "")
-                  : await NotesApi.updateNote(
-                      note.id,
-                      titleController.text,
-                      note.body,
-                    );
+                  ? await NotesApi.createNote(titleController.text)
+                  : await NotesApi.updateTitle(note.id, titleController.text);
               Navigator.pop(context);
               setState(_loadNotes);
             },

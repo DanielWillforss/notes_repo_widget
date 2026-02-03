@@ -34,13 +34,10 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
     });
   }
 
+  //TODO: run this on exit page
   Future<void> _updateNote() async {
     try {
-      await NotesApi.updateNote(
-        widget.note.id,
-        widget.note.title,
-        _contentController.text,
-      );
+      await NotesApi.updateBody(widget.note.id, _contentController.text);
     } catch (e) {
       // Handle error, maybe show a SnackBar
       ScaffoldMessenger.of(

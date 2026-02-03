@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:notes_repo_widget/note_widget_package.dart';
+import 'package:notes_repo_widget/src/bubble_test/bubble_page.dart';
 import 'package:notes_repo_widget/src/notes_page.dart';
 
 void main() {
@@ -16,7 +17,41 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
-      home: NotesPage(),
+      home: const HomeSwitcher(),
+      //home: NotesPage(),
+    );
+  }
+}
+
+class HomeSwitcher extends StatefulWidget {
+  const HomeSwitcher({super.key});
+
+  @override
+  State<HomeSwitcher> createState() => _HomeSwitcherState();
+}
+
+class _HomeSwitcherState extends State<HomeSwitcher> {
+  int index = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.swap_horiz),
+            onPressed: () {
+              setState(() {
+                index = index == 0 ? 1 : 0;
+              });
+            },
+          ),
+        ],
+      ),
+      body: IndexedStack(
+        index: index,
+        children: const [BubblePage(), NotesPage()],
+      ),
     );
   }
 }
