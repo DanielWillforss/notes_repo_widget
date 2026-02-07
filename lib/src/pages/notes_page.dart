@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:notes_repo_core/note_package.dart';
-import 'package:notes_repo_widget/src/note_detail_page.dart';
+import 'package:notes_repo_widget/src/notes_base.dart';
+import 'package:notes_repo_widget/src/pages/note_detail_page.dart';
 
 import 'package:notes_repo_widget/src/notes_api.dart';
 
@@ -32,51 +33,32 @@ class _NotesPageState extends State<NotesPage> {
         onPressed: () => _showDialogWindow(null),
         child: const Icon(Icons.add),
       ),
-      body: FutureBuilder<List<Note>>(
+      body: NotesBase.getFutureBuilder(
         future: _notesFuture,
-        builder: (context, snapshot) {
-          //Buffer
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          //If error
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-
-          //List empty
-          final notes = snapshot.data!;
-          if (notes.isEmpty) {
-            return const Center(child: Text('No notes yet'));
-          }
-
-          //Build list
-          return ListView.builder(
-            itemCount: notes.length,
-            itemBuilder: (context, index) {
-              final note = notes[index];
-              return ListTile(
-                title: Text(note.title),
-                subtitle: Text(
-                  note.body,
-                  maxLines: 2, // show only 2 lines
-                  overflow: TextOverflow.ellipsis, // add "..." if too long
-                ),
-                onTap: () async {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => NoteDetailPage(note: note),
-                    ),
-                  );
-                  setState(_loadNotes);
-                },
-                onLongPress: () => _showDialogWindow(note),
-              );
-            },
-          );
-        },
+        builder: (notes) => ListView.builder(
+          itemCount: notes.length,
+          itemBuilder: (context, index) {
+            final note = notes[index];
+            return ListTile(
+              title: Text(note.title),
+              subtitle: Text(
+                note.body,
+                maxLines: 2, // show only 2 lines
+                overflow: TextOverflow.ellipsis, // add "..." if too long
+              ),
+              onTap: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NoteDetailPage(note: note),
+                  ),
+                );
+                setState(_loadNotes);
+              },
+              onLongPress: () => _showDialogWindow(note),
+            );
+          },
+        ),
       ),
     );
   }

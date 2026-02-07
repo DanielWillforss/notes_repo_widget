@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:notes_repo_core/classes/note_model.dart';
 import 'package:notes_repo_widget/note_widget_package.dart';
-import 'package:notes_repo_widget/src/bubble_test/bubble_controller.dart';
+import 'package:notes_repo_widget/src/bubble_controller/bubble_controller.dart';
+import 'package:notes_repo_widget/src/notes_base.dart';
 
 class BubblePage extends StatefulWidget {
   const BubblePage({super.key});
@@ -16,18 +17,19 @@ class BubblePage extends StatefulWidget {
 }
 
 class _BubblePageState extends State<BubblePage> {
-  //main data list, await in builder
   late Future<List<Note>> _notesFuture;
-  //Handles camera
+
   TransformationController? _viewController;
-  //Manages the bubbles
-  late final BubblePhysicsController _bubbleController =
-      BubblePhysicsController(loadNotes);
+  late final BubbleController _bubbleController = BubbleController(() {
+    setState(() {
+      _notesFuture = NotesApi.notesFuture;
+    });
+  });
 
   @override
   void initState() {
     super.initState();
-    loadNotes(NotesApi.getNotes());
+    _notesFuture = NotesApi.getNotes();
   }
 
   @override
@@ -49,14 +51,7 @@ class _BubblePageState extends State<BubblePage> {
   @override
   void dispose() {
     _viewController?.dispose();
-    //_bubbleController.dispose();
     super.dispose();
-  }
-
-  void loadNotes(Future<List<Note>> future) {
-    setState(() {
-      _notesFuture = future;
-    });
   }
 
   @override
@@ -67,37 +62,25 @@ class _BubblePageState extends State<BubblePage> {
         onPressed: () => _showDialogWindow(),
         child: const Icon(Icons.add),
       ),
-      body: FutureBuilder<List<Note>>(
+      body: NotesBase.getFutureBuilder(
         future: _notesFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-
-          final notes = snapshot.data ?? [];
-          if (notes.isEmpty) {
-            return const Center(child: Text('No notes yet'));
-          }
-
-          return InteractiveViewer(
-            constrained: false,
-            transformationController: _viewController,
-            minScale: BubblePage._minScale,
-            maxScale: BubblePage._maxScale,
-            boundaryMargin: const EdgeInsets.all(0),
-            child: SizedBox(
-              width: BubblePage._canvasSize,
-              height: BubblePage._canvasSize,
-              child: Stack(
-                //Actually builds the bubbles based on earlier logic
-                children: _bubbleController.build(notes),
-              ),
+        builder: (notes) => InteractiveViewer(
+          constrained: false,
+          transformationController: _viewController,
+          minScale: BubblePage._minScale,
+          maxScale: BubblePage._maxScale,
+          boundaryMargin: const EdgeInsets.all(0),
+          child: SizedBox(
+            width: BubblePage._canvasSize,
+            height: BubblePage._canvasSize,
+            child: Stack(
+              children: [
+                Container(color: Colors.grey),
+                ..._bubbleController.buildBubbles(notes),
+              ],
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }
@@ -116,7 +99,9 @@ class _BubblePageState extends State<BubblePage> {
         actions: [
           ElevatedButton(
             onPressed: () async {
-              loadNotes(NotesApi.createNote(titleController.text));
+              setState(() {
+                _notesFuture = NotesApi.createNote(titleController.text);
+              });
               Navigator.pop(context);
             },
             child: Text('Create'),

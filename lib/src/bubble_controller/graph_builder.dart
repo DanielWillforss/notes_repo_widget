@@ -2,17 +2,13 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:notes_repo_core/classes/note_model.dart';
-import 'package:notes_repo_widget/src/bubble_test/bubble_controller.dart';
-import 'package:notes_repo_widget/src/bubble_test/bubble_page.dart';
+import 'package:notes_repo_widget/src/bubble_controller/bubble_controller.dart';
+import 'package:notes_repo_widget/src/pages/bubble_page.dart';
 
 class GraphBuilder {
   final Map<int, Node> nodes;
   final List<LinePainter> edges;
   final ValueNotifier<int> repaintNotifier;
-
-  final double rootDistance = 200;
-  final double radius = 70;
-  final double shoveFactor = 2.2; //has to be >2
 
   GraphBuilder(this.nodes, this.edges, this.repaintNotifier);
 
@@ -66,7 +62,7 @@ class GraphBuilder {
       roots[i].position.value = _positionFromAngle(
         rootAngles[i],
         BubblePage.origin,
-        rootDistance,
+        BubbleController.rootDistance,
       );
       _setInitialPos(roots[i], rootAngles[i]);
     }
@@ -188,7 +184,7 @@ class GraphBuilder {
       children[i].position.value = _positionFromAngle(
         angles[i],
         root.position.value,
-        radius * shoveFactor,
+        BubbleController.radius * BubbleController.shoveFactor,
       );
       _setInitialPos(children[i], angles[i]);
     }

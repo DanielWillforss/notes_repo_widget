@@ -1,41 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:notes_repo_core/classes/note_model.dart';
 import 'package:notes_repo_widget/note_widget_package.dart';
-import 'package:notes_repo_widget/src/bubble_test/bubble_page.dart';
-import 'package:notes_repo_widget/src/bubble_test/bubble_widget.dart';
-import 'package:notes_repo_widget/src/bubble_test/graph_builder.dart';
-import 'package:notes_repo_widget/src/bubble_test/physics_engine.dart';
+import 'package:notes_repo_widget/src/pages/bubble_page.dart';
+import 'package:notes_repo_widget/src/bubble_widget.dart';
+import 'package:notes_repo_widget/src/bubble_controller/graph_builder.dart';
+import 'package:notes_repo_widget/src/bubble_controller/physics_engine.dart';
 
-class BubblePhysicsController {
-  final double radius = 70;
-  final double shoveFactor = 2.2; //has to be >2
-  final double rootDistance = 200;
-  final double attachDistance = 70;
+class BubbleController {
+  static final double radius = 70;
+  static final double shoveFactor = 2.2; //has to be >2
+  static final double rootDistance = 200;
+  static final double attachDistance = 70;
 
   final Map<int, Node> nodes = {};
   final List<LinePainter> edges = [];
   final ValueNotifier<int> repaintNotifier = ValueNotifier(0);
-  Function(Future<List<Note>> future) setState;
+  final VoidCallback onChanged;
 
   late final GraphBuilder graph = GraphBuilder(nodes, edges, repaintNotifier);
-  late final PhysicsEngine physics = PhysicsEngine(nodes, edges);
+  late final PhysicsEngine physics = PhysicsEngine(
+    nodes,
+    edges,
+    repaintNotifier,
+  );
 
   bool _isInitialized = false;
 
-  BubblePhysicsController(this.setState);
+  BubbleController(this.onChanged);
 
   //used for frame by frame movements
 
   Function(int index, Offset delta) get moveNode => physics.moveNode;
 
-  // void moveNode(int index, Offset delta) {
-  // physics.moveNode(index, delta);
-  // }
-
   //called after movement to update everything
   void updatePositions(int movedNodeId) {
-    //physics.updatePositions(movedNodeId);
-
     final Offset movedPosition = nodes[movedNodeId]!.position.value;
     int? closestNodeId;
     double closestDistance = double.infinity;
@@ -52,7 +50,8 @@ class BubblePhysicsController {
     });
 
     if (closestNodeId != null) {
-      setState(NotesApi.updateParentId(movedNodeId, closestNodeId));
+      NotesApi.updateParentId(movedNodeId, closestNodeId);
+      onChanged();
     }
 
     physics.checkCollision(
@@ -78,12 +77,11 @@ class BubblePhysicsController {
     _isInitialized = true;
   }
 
-  List<Widget> build(List<Note> notes) {
+  List<Widget> buildBubbles(List<Note> notes) {
     _makeBubbles(notes);
 
     //actual build
     final bubbles = <Widget>[];
-    bubbles.add(Container(color: Colors.grey));
     for (LinePainter edge in edges) {
       bubbles.add(
         Positioned.fill(
@@ -96,7 +94,7 @@ class BubblePhysicsController {
     }
     nodes.forEach((key, value) {
       bubbles.add(
-        NoteBubble(node: value, controller: this, setState: setState),
+        NoteBubble(node: value, controller: this, onChanged: onChanged),
       );
     });
     return bubbles; // create bubbles and lines
@@ -146,5 +144,7 @@ class LinePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_) => true;
+  bool shouldRepaint(LinePainter old) {
+    return old.start != start || old.end != end;
+  }
 }

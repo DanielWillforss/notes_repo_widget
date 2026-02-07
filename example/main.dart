@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:notes_repo_widget/note_widget_package.dart';
-import 'package:notes_repo_widget/src/bubble_test/bubble_page.dart';
-import 'package:notes_repo_widget/src/notes_page.dart';
+import 'package:notes_repo_widget/src/pages/bubble_page.dart';
+import 'package:notes_repo_widget/src/pages/notes_page.dart';
 
 void main() {
   NotesApi.baseUrl = 'http://127.0.0.1:5000/notes/';

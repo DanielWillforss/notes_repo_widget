@@ -4,10 +4,16 @@ import 'package:http/http.dart' as http;
 import 'package:notes_repo_core/note_package.dart';
 
 class NotesApi {
-  static late String baseUrl;
+  static late final String baseUrl;
+  static late Future<List<Note>> notesFuture;
+
+  static Future<List<Note>> getNotes() {
+    notesFuture = _getNotes();
+    return notesFuture;
+  }
 
   /// GET /notes
-  static Future<List<Note>> getNotes() async {
+  static Future<List<Note>> _getNotes() async {
     final response = await http.get(Uri.parse('$baseUrl'));
 
     if (response.statusCode != 200) {
@@ -34,8 +40,12 @@ class NotesApi {
     return data.map((e) => Note.fromMap(e)).toList();
   }
 
+  static Future<void> updateTitle(int id, String title) async {
+    notesFuture = _updateTitle(id, title);
+  }
+
   /// PUT /notes/{id}/title/
-  static Future<List<Note>> updateTitle(int id, String title) async {
+  static Future<List<Note>> _updateTitle(int id, String title) async {
     final response = await http.put(
       Uri.parse('$baseUrl$id/title/'),
       headers: {'Content-Type': 'application/json'},
@@ -66,8 +76,12 @@ class NotesApi {
     return data.map((e) => Note.fromMap(e)).toList();
   }
 
+  static void updateParentId(int id, int? parentId) {
+    notesFuture = _updateParentId(id, parentId);
+  }
+
   /// PUT /notes/{id}/parent/
-  static Future<List<Note>> updateParentId(int id, int? parentId) async {
+  static Future<List<Note>> _updateParentId(int id, int? parentId) async {
     final response = await http.put(
       Uri.parse('$baseUrl$id/parent/'),
       headers: {'Content-Type': 'application/json'},
@@ -82,8 +96,12 @@ class NotesApi {
     return data.map((e) => Note.fromMap(e)).toList();
   }
 
+  static Future<void> deleteNote(int id) async {
+    notesFuture = _deleteNote(id);
+  }
+
   /// DELETE /notes/{id}
-  static Future<List<Note>> deleteNote(int id) async {
+  static Future<List<Note>> _deleteNote(int id) async {
     final response = await http.delete(Uri.parse('$baseUrl$id/'));
 
     if (response.statusCode != 200) {

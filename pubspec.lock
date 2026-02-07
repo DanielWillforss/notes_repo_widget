@@ -184,7 +184,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "5d6d463b8fb7d057adb09a3a845f0b34d243cfc9"
+      resolved-ref: "84470e6ff5f0a9aa223b0349081cdc053baef31d"
       url: "https://github.com/DanielWillforss/notes_repo_code.git"
     source: git
     version: "1.0.0"
@@ -245,10 +245,10 @@ packages:
     dependency: transitive
     description:
       name: source_span
-      sha256: "254ee5351d6cb365c859e20ee823c3bb479bf4a293c22d17a9f1bf144ce86f7c"
+      sha256: "56a02f1f4cd1a2d96303c0144c93bd6d909eea6bee6bf5a0e0b685edbd4c47ab"
       url: "https://pub.dev"
     source: hosted
-    version: "1.10.1"
+    version: "1.10.2"
   stack_trace:
     dependency: transitive
     description:
